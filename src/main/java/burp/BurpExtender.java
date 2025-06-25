@@ -58,9 +58,13 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        // Base Score Panel (centered)
-        JPanel baseScorePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        // Base Score Panel (centered horizontally)
+        JPanel baseScorePanel = new JPanel();
+        baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.X_AXIS));
         baseScorePanel.setBackground(Color.WHITE);
+
+        // Add horizontal glue before and after to center the content
+        baseScorePanel.add(Box.createHorizontalGlue());
         baseScorePanel.add(new JLabel("Base Score"));
         baseScoreLabel = new JLabel("0.0 (None)");
         baseScoreLabel.setOpaque(true);
@@ -68,7 +72,9 @@ class CvssTab extends JPanel {
         baseScoreLabel.setForeground(Color.BLACK);
         baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
+        baseScorePanel.add(Box.createRigidArea(new Dimension(10, 0)));
         baseScorePanel.add(baseScoreLabel);
+        baseScorePanel.add(Box.createHorizontalGlue());
 
         // Metrics panels
         JPanel leftPanel = new JPanel(new GridBagLayout());
@@ -98,19 +104,7 @@ class CvssTab extends JPanel {
         addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
         addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
 
-        // Center metrics in a panel with baseScorePanel on top
-        JPanel metricsPanel = new JPanel();
-        metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
-        metricsPanel.setBackground(Color.WHITE);
-
-        // Add baseScorePanel at the top, centered
-        baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        metricsPanel.add(baseScorePanel);
-
-        // Add a small vertical gap
-        metricsPanel.add(Box.createVerticalStrut(10));
-
-        // Add leftPanel and rightPanel side by side in a horizontal panel
+        // Buttons panel (side by side)
         JPanel buttonsPanel = new JPanel(new GridBagLayout());
         buttonsPanel.setBackground(Color.WHITE);
         GridBagConstraints metricsGbc = new GridBagConstraints();
@@ -121,7 +115,16 @@ class CvssTab extends JPanel {
         metricsGbc.gridx = 1;
         buttonsPanel.add(rightPanel, metricsGbc);
 
+        // Stack baseScorePanel and buttonsPanel vertically with no gap
+        JPanel metricsPanel = new JPanel();
+        metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
+        metricsPanel.setBackground(Color.WHITE);
+
+        baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+        metricsPanel.add(baseScorePanel);
+        // Do NOT add any vertical strut or glue here
         metricsPanel.add(buttonsPanel);
 
         // Add metricsPanel to the center of the main panel
@@ -259,15 +262,28 @@ class CvssTab extends JPanel {
         baseScoreLabel.setText(String.format("%.1f (%s)", score, severity));
         Color color;
         switch (severity) {
-            case "None": color = new Color(82, 179, 217); break;
-            case "Low": color = new Color(255, 204, 0); break;
-            case "Medium": color = new Color(255, 153, 0); break;
-            case "High": color = new Color(255, 87, 34); break;
-            case "Critical": color = new Color(205, 0, 0); break;
-            default: color = Color.LIGHT_GRAY;
+            case "None": // info
+                color = Color.decode("#006fa2");
+                break;
+            case "Low":
+                color = Color.decode("#00c17e");
+                break;
+            case "Medium":
+                color = Color.decode("#ff9655");
+                break;
+            case "High":
+                color = Color.decode("#ff5863");
+                break;
+            case "Critical":
+                color = Color.decode("#de50a6");
+                break;
+            default:
+                color = Color.LIGHT_GRAY;
         }
         baseScoreLabel.setBackground(color);
-        baseScoreLabel.setForeground(severity.equals("Low") || severity.equals("Medium") ? Color.BLACK : Color.WHITE);
+        baseScoreLabel.setForeground(
+            severity.equals("Low") || severity.equals("None") ? Color.WHITE : Color.WHITE
+        );
     }
 }
 
