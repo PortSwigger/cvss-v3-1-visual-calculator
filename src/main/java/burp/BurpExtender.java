@@ -44,6 +44,7 @@ class CvssTab extends JPanel {
     private static final String CVSS_VERSION = "CVSS:3.1";
     private int metricRowCounterLeft = 0;
     private int metricRowCounterRight = 0;
+    private final RiskMeterPanel riskMeterPanel = new RiskMeterPanel();
 
     public CvssTab() {
         setLayout(new BorderLayout(10, 10));
@@ -63,7 +64,6 @@ class CvssTab extends JPanel {
         baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.X_AXIS));
         baseScorePanel.setBackground(Color.WHITE);
 
-        // Add horizontal glue before and after to center the content
         baseScorePanel.add(Box.createHorizontalGlue());
         baseScorePanel.add(new JLabel("Base Score"));
         baseScoreLabel = new JLabel("0.0 (None)");
@@ -115,17 +115,26 @@ class CvssTab extends JPanel {
         metricsGbc.gridx = 1;
         buttonsPanel.add(rightPanel, metricsGbc);
 
-        // Stack baseScorePanel and buttonsPanel vertically with no gap
+        // Risk Meter Panel (next to buttons panel)
+        JPanel centerPanel = new JPanel();
+        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
+        centerPanel.setBackground(Color.WHITE);
+        buttonsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        riskMeterPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        centerPanel.add(buttonsPanel);
+        centerPanel.add(Box.createHorizontalStrut(30));
+        centerPanel.add(riskMeterPanel);
+
+        // Stack baseScorePanel and centerPanel vertically with no gap
         JPanel metricsPanel = new JPanel();
         metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
         metricsPanel.setBackground(Color.WHITE);
 
         baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        centerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
 
         metricsPanel.add(baseScorePanel);
-        // Do NOT add any vertical strut or glue here
-        metricsPanel.add(buttonsPanel);
+        metricsPanel.add(centerPanel);
 
         // Add metricsPanel to the center of the main panel
         add(metricsPanel, BorderLayout.CENTER);
@@ -281,9 +290,90 @@ class CvssTab extends JPanel {
                 color = Color.LIGHT_GRAY;
         }
         baseScoreLabel.setBackground(color);
-        baseScoreLabel.setForeground(
-            severity.equals("Low") || severity.equals("None") ? Color.WHITE : Color.WHITE
-        );
+        baseScoreLabel.setForeground(Color.WHITE);
+        riskMeterPanel.setScore(score, severity); // Update risk meter dynamically
+    }
+}
+
+// --- RiskMeterPanel class ---
+class RiskMeterPanel extends JPanel {
+    private double score = 0.0;
+    private String severity = "None";
+
+    public RiskMeterPanel() {
+        setPreferredSize(new Dimension(160, 120));
+        setMinimumSize(new Dimension(120, 90));
+        setOpaque(false);
+    }
+
+    public void setScore(double score, String severity) {
+        this.score = score;
+        this.severity = severity;
+        repaint();
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        super.paintComponent(g);
+        // Draw speedometer arc
+        Graphics2D g2 = (Graphics2D) g.create();
+        int w = getWidth();
+        int h = getHeight();
+        int size = Math.min(w, h) - 20;
+        int cx = w / 2;
+        int cy = h - 10;
+        int radius = size / 2;
+
+        // Draw colored arc segments
+        int arcStart = 180;
+        int arcExtent = 180;
+        int[] arcRanges = {36, 54, 54, 27, 9}; // degrees for None, Low, Medium, High, Critical
+        Color[] arcColors = {
+            Color.decode("#006fa2"), // None/info
+            Color.decode("#00c17e"), // Low
+            Color.decode("#ff9655"), // Medium
+            Color.decode("#ff5863"), // High
+            Color.decode("#de50a6")  // Critical
+        };
+        int currentStart = arcStart;
+        for (int i = 0; i < arcRanges.length; i++) {
+            g2.setColor(arcColors[i]);
+            g2.setStroke(new BasicStroke(16, BasicStroke.CAP_ROUND, BasicStroke.JOIN_ROUND));
+            g2.drawArc(cx - radius, cy - radius, size, size, currentStart, -arcRanges[i]);
+            currentStart -= arcRanges[i];
+        }
+
+        // Draw needle
+        double angle = Math.toRadians(180 - (score / 10.0) * 180);
+        int needleLength = radius - 12;
+        int nx = (int) (cx + needleLength * Math.cos(angle));
+        int ny = (int) (cy - needleLength * Math.sin(angle));
+        g2.setColor(Color.DARK_GRAY);
+        g2.setStroke(new BasicStroke(3));
+        g2.drawLine(cx, cy, nx, ny);
+
+        // Draw center circle
+        g2.setColor(Color.WHITE);
+        g2.fillOval(cx - 8, cy - 8, 16, 16);
+        g2.setColor(Color.GRAY);
+        g2.drawOval(cx - 8, cy - 8, 16, 16);
+
+        // Draw score text
+        String scoreText = String.format("%.1f", score);
+        g2.setFont(new Font("SansSerif", Font.BOLD, 18));
+        FontMetrics fm = g2.getFontMetrics();
+        int textWidth = fm.stringWidth(scoreText);
+        g2.setColor(Color.BLACK);
+        g2.drawString(scoreText, cx - textWidth / 2, cy - radius + 35);
+
+        // Draw severity label
+        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
+        String sevText = severity;
+        int sevWidth = g2.getFontMetrics().stringWidth(sevText);
+        g2.setColor(Color.DARK_GRAY);
+        g2.drawString(sevText, cx - sevWidth / 2, cy - radius + 55);
+
+        g2.dispose();
     }
 }
 
