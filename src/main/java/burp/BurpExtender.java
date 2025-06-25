@@ -58,12 +58,19 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        JPanel outerPanel = new JPanel(new GridBagLayout());
-        outerPanel.setBackground(Color.WHITE);
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.BOTH;
-        gbc.insets = new Insets(5, 15, 5, 15);
+        // Base Score Panel (centered)
+        JPanel baseScorePanel = new JPanel(new FlowLayout(FlowLayout.CENTER));
+        baseScorePanel.setBackground(Color.WHITE);
+        baseScorePanel.add(new JLabel("Base Score"));
+        baseScoreLabel = new JLabel("0.0 (None)");
+        baseScoreLabel.setOpaque(true);
+        baseScoreLabel.setBackground(new Color(200, 200, 200));
+        baseScoreLabel.setForeground(Color.BLACK);
+        baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
+        baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
+        baseScorePanel.add(baseScoreLabel);
 
+        // Metrics panels
         JPanel leftPanel = new JPanel(new GridBagLayout());
         JPanel rightPanel = new JPanel(new GridBagLayout());
         leftPanel.setBackground(Color.WHITE);
@@ -91,26 +98,47 @@ class CvssTab extends JPanel {
         addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
         addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        outerPanel.add(leftPanel, gbc);
-        gbc.gridx = 1;
-        outerPanel.add(rightPanel, gbc);
+        // Center metrics in a panel with baseScorePanel on top
+        JPanel metricsPanel = new JPanel();
+        metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
+        metricsPanel.setBackground(Color.WHITE);
 
-        // Base Score
-        JPanel baseScorePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-        baseScorePanel.setBackground(Color.WHITE);
-        baseScorePanel.add(new JLabel("Base Score"));
-        baseScoreLabel = new JLabel("0.0 (None)");
-        baseScoreLabel.setOpaque(true);
-        baseScoreLabel.setBackground(new Color(200, 200, 200));
-        baseScoreLabel.setForeground(Color.BLACK);
-        baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
-        baseScorePanel.add(baseScoreLabel);
+        // Add baseScorePanel at the top, centered
+        baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        metricsPanel.add(baseScorePanel);
 
-        add(baseScorePanel, BorderLayout.CENTER);
-        add(outerPanel, BorderLayout.SOUTH);
+        // Add a small vertical gap
+        metricsPanel.add(Box.createVerticalStrut(10));
+
+        // Add leftPanel and rightPanel side by side in a horizontal panel
+        JPanel buttonsPanel = new JPanel(new GridBagLayout());
+        buttonsPanel.setBackground(Color.WHITE);
+        GridBagConstraints metricsGbc = new GridBagConstraints();
+        metricsGbc.gridx = 0;
+        metricsGbc.gridy = 0;
+        metricsGbc.insets = new Insets(0, 0, 0, 20);
+        buttonsPanel.add(leftPanel, metricsGbc);
+        metricsGbc.gridx = 1;
+        buttonsPanel.add(rightPanel, metricsGbc);
+
+        buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        metricsPanel.add(buttonsPanel);
+
+        // Add metricsPanel to the center of the main panel
+        add(metricsPanel, BorderLayout.CENTER);
+
+        // Footer (as before)
+        JPanel footerPanel = new JPanel();
+        footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        footerPanel.setBackground(new Color(245, 245, 245));
+        JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
+        footerLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        footerLabel.setForeground(new Color(80, 80, 80));
+        footerPanel.add(footerLabel);
+
+        // Add footerPanel to the bottom
+        add(footerPanel, BorderLayout.SOUTH);
+
         initializeDefaults();
     }
 
