@@ -1,0 +1,48 @@
+# ----------------------
+# Java & Gradle .gitignore
+# ----------------------
+
+# Compiled class files
+*.class
+
+# Log files
+*.log
+
+# Build output
+/build/
+/out/
+
+# Gradle wrapper files
+.gradle/
+/!gradle/wrapper/gradle-wrapper.jar
+
+# IDEs and editors
+.idea/
+*.iml
+*.ipr
+*.iws
+.vscode/
+*.sw?
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Generated files
+/bin/
+/target/
+
+# Backup files
+*~ 
+*.bak
+*.tmp
+*.swp
+
+# Exclude local environment configs
+.env
+*.local.properties
+
+# Ignore jar/war/zip output artifacts if you don't want to commit them
+*.jar
+*.war
+*.zip

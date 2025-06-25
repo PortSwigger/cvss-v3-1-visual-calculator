@@ -1,0 +1,28 @@
+plugins {
+    id 'java'
+}
+java {
+    sourceCompatibility = JavaVersion.VERSION_11
+    targetCompatibility = JavaVersion.VERSION_11
+}
+
+group 'com.example'
+version '1.0-SNAPSHOT'
+
+repositories {
+    mavenCentral()
+    maven { url 'https://jitpack.io' }
+}
+
+dependencies {
+    implementation 'com.github.PortSwigger:burp-extender-api:1.7.22'
+}
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'burp.BurpExtender'
+    }
+    from {
+        configurations.runtimeClasspath.collect { it.isDirectory() ? it : zipTree(it) }
+    }
+}
