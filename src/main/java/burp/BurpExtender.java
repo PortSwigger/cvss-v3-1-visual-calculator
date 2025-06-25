@@ -42,7 +42,8 @@ class CvssTab extends JPanel {
     private final Map<String, ButtonGroup> metricGroups = new HashMap<>();
     private final Map<String, String> currentSelections = new HashMap<>();
     private static final String CVSS_VERSION = "CVSS:3.1";
-    private int metricRowCounter = 1;
+    private int metricRowCounterLeft = 1;
+    private int metricRowCounterRight = 1;
 
     public CvssTab() {
         setLayout(new BorderLayout(10, 10));
@@ -57,20 +58,24 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        JPanel metricsPanel = new JPanel(new GridBagLayout());
-        metricsPanel.setBackground(Color.WHITE);
-        metricsPanel.setBorder(BorderFactory.createCompoundBorder(
-                BorderFactory.createTitledBorder(""),
-                new EmptyBorder(10, 10, 10, 10)
-        ));
-        GridBagConstraints gbc = new GridBagConstraints();
-        gbc.fill = GridBagConstraints.HORIZONTAL;
-        gbc.insets = new Insets(5, 5, 5, 5);
-        gbc.anchor = GridBagConstraints.WEST;
+        JPanel outerPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel leftPanel = new JPanel(new GridBagLayout());
+        JPanel rightPanel = new JPanel(new GridBagLayout());
 
-        gbc.gridx = 0;
-        gbc.gridy = 0;
-        gbc.gridwidth = 4;
+        leftPanel.setBackground(Color.WHITE);
+        rightPanel.setBackground(Color.WHITE);
+
+        GridBagConstraints gbcLeft = new GridBagConstraints();
+        gbcLeft.fill = GridBagConstraints.HORIZONTAL;
+        gbcLeft.insets = new Insets(5, 5, 5, 5);
+        gbcLeft.anchor = GridBagConstraints.WEST;
+
+        GridBagConstraints gbcRight = new GridBagConstraints();
+        gbcRight.fill = GridBagConstraints.HORIZONTAL;
+        gbcRight.insets = new Insets(5, 5, 5, 5);
+        gbcRight.anchor = GridBagConstraints.WEST;
+
+        // Base Score Section
         JPanel baseScorePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         baseScorePanel.setBackground(Color.WHITE);
         baseScorePanel.add(new JLabel("Base Score"));
@@ -81,31 +86,34 @@ class CvssTab extends JPanel {
         baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
         baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
         baseScorePanel.add(baseScoreLabel);
-        metricsPanel.add(baseScorePanel, gbc);
 
-        gbc.gridwidth = 1;
+        outerPanel.add(baseScorePanel, BorderLayout.NORTH);
 
-        addMetric(metricsPanel, gbc, "Attack Vector", "AV", new String[]{"Network", "Adjacent", "Local", "Physical"}, new String[]{"N", "A", "L", "P"});
-        addMetric(metricsPanel, gbc, "Scope", "S", new String[]{"Unchanged", "Changed"}, new String[]{"U", "C"});
-        addMetric(metricsPanel, gbc, "Attack Complexity", "AC", new String[]{"Low", "High"}, new String[]{"L", "H"});
-        addMetric(metricsPanel, gbc, "Confidentiality", "C", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(metricsPanel, gbc, "Privileges Required", "PR", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(metricsPanel, gbc, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(metricsPanel, gbc, "User Interaction", "UI", new String[]{"None", "Required"}, new String[]{"N", "R"});
-        addMetric(metricsPanel, gbc, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        // Left column metrics
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Vector", "AV", new String[]{"Network", "Adjacent", "Local", "Physical"}, new String[]{"N", "A", "L", "P"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Complexity", "AC", new String[]{"Low", "High"}, new String[]{"L", "H"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Privileges Required", "PR", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "User Interaction", "UI", new String[]{"None", "Required"}, new String[]{"N", "R"});
 
-        add(metricsPanel, BorderLayout.CENTER);
+        // Right column metrics
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Scope", "S", new String[]{"Unchanged", "Changed"}, new String[]{"U", "C"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Confidentiality", "C", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+
+        outerPanel.add(leftPanel, BorderLayout.WEST);
+        outerPanel.add(rightPanel, BorderLayout.EAST);
+
+        add(outerPanel, BorderLayout.CENTER);
         initializeDefaults();
     }
 
-    private void addMetric(JPanel panel, GridBagConstraints gbc, String label, String abbr, String[] options, String[] values) {
+    private void addMetric(JPanel panel, GridBagConstraints gbc, int row, String label, String abbr, String[] options, String[] values) {
         gbc.gridx = 0;
-        gbc.gridy = metricRowCounter++;
-        gbc.anchor = GridBagConstraints.EAST;
+        gbc.gridy = row;
         panel.add(new JLabel(label), gbc);
 
         gbc.gridx = 1;
-        gbc.anchor = GridBagConstraints.WEST;
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
         buttonPanel.setBackground(Color.WHITE);
         ButtonGroup group = new ButtonGroup();
@@ -167,7 +175,7 @@ class CvssTab extends JPanel {
 
     private void updateButtonColors(JToggleButton button, boolean isSelected) {
         if (isSelected) {
-            button.setBackground(new Color(46, 139, 87));
+            button.setBackground(new Color(0, 153, 102));
             button.setForeground(Color.WHITE);
         } else {
             button.setBackground(UIManager.getColor("Button.background"));
@@ -249,8 +257,8 @@ class CvssV31Calculator {
         }
     }
 
-    private static double roundup(double d) {
-        return Math.ceil(d * 100000) / 100000.0;
+    private static double roundUp1Decimal(double value) {
+        return Math.ceil(value * 10.0) / 10.0;
     }
 
     public static Score calculate(String vector) {
@@ -261,25 +269,24 @@ class CvssV31Calculator {
             metrics.put(metric[0], metric[1]);
         }
 
-        double confidentiality = CIA_MAP.get(metrics.get("C"));
-        double integrity = CIA_MAP.get(metrics.get("I"));
-        double availability = CIA_MAP.get(metrics.get("A"));
-        double impactSubScore = 1 - ((1 - confidentiality) * (1 - integrity) * (1 - availability));
+        double impactSubScoreBase = 1 - ((1 - CIA_MAP.get(metrics.get("C"))) *
+                                        (1 - CIA_MAP.get(metrics.get("I"))) *
+                                        (1 - CIA_MAP.get(metrics.get("A"))));
 
-        double attackVector = ATTACK_VECTOR_MAP.get(metrics.get("AV"));
-        double attackComplexity = ATTACK_COMPLEXITY_MAP.get(metrics.get("AC"));
-        double privilegesRequired = PRIVILEGES_REQUIRED_MAP.get(metrics.get("S")).get(metrics.get("PR"));
-        double userInteraction = USER_INTERACTION_MAP.get(metrics.get("UI"));
-        double exploitabilitySubScore = 8.22 * attackVector * attackComplexity * privilegesRequired * userInteraction;
+        double impactSubScore = metrics.get("S").equals("U") ?
+                6.42 * impactSubScoreBase :
+                7.52 * (impactSubScoreBase - 0.029) - 3.25 * Math.pow((impactSubScoreBase - 0.02), 15);
 
-        double baseScore;
-        if (impactSubScore <= 0) {
-            baseScore = 0.0;
-        } else if (metrics.get("S").equals("U")) {
-            baseScore = roundup(Math.min(impactSubScore + exploitabilitySubScore, 10));
-        } else {
-            baseScore = roundup(Math.min(1.08 * (impactSubScore + exploitabilitySubScore), 10));
-        }
+        double exploitabilitySubScore = 8.22 *
+                ATTACK_VECTOR_MAP.get(metrics.get("AV")) *
+                ATTACK_COMPLEXITY_MAP.get(metrics.get("AC")) *
+                PRIVILEGES_REQUIRED_MAP.get(metrics.get("S")).get(metrics.get("PR")) *
+                USER_INTERACTION_MAP.get(metrics.get("UI"));
+
+        double baseScore = impactSubScore <= 0 ? 0 :
+                (metrics.get("S").equals("U") ?
+                        roundUp1Decimal(Math.min(impactSubScore + exploitabilitySubScore, 10)) :
+                        roundUp1Decimal(Math.min(1.08 * (impactSubScore + exploitabilitySubScore), 10)));
 
         return new Score(baseScore, getSeverity(baseScore));
     }
