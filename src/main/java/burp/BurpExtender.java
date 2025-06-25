@@ -51,15 +51,6 @@ class CvssTab extends JPanel {
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(new Color(245, 245, 245));
 
-        // Vector String Panel (top row)
-        JPanel vectorPanel = new JPanel(new BorderLayout(10, 10));
-        vectorPanel.setBorder(BorderFactory.createTitledBorder("Vector String"));
-        vectorStringField = new JTextField("CVSS:3.1");
-        vectorStringField.setEditable(false);
-        vectorStringField.setFont(new Font("Monospaced", Font.PLAIN, 14));
-        vectorPanel.add(vectorStringField, BorderLayout.CENTER);
-        add(vectorPanel, BorderLayout.NORTH);
-
         // --- Left Column: risk speedometer (top), base score (bottom) ---
         JPanel leftColumn = new JPanel();
         leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
@@ -91,7 +82,24 @@ class CvssTab extends JPanel {
         baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
         leftColumn.add(baseScorePanel);
 
-        // --- Right Column: button panel (metrics) ---
+        // --- Right Column: vector string (top), button panel (bottom) ---
+        JPanel rightColumn = new JPanel();
+        rightColumn.setLayout(new BoxLayout(rightColumn, BoxLayout.Y_AXIS));
+        rightColumn.setBackground(Color.WHITE);
+
+        // Vector String Panel (top of right column)
+        JPanel vectorPanel = new JPanel(new BorderLayout(10, 10));
+        vectorPanel.setBorder(BorderFactory.createTitledBorder("Vector String"));
+        vectorStringField = new JTextField("CVSS:3.1");
+        vectorStringField.setEditable(false);
+        vectorStringField.setFont(new Font("Monospaced", Font.PLAIN, 14));
+        vectorPanel.add(vectorStringField, BorderLayout.CENTER);
+        vectorPanel.setMaximumSize(new Dimension(400, 50));
+        rightColumn.add(vectorPanel);
+
+        rightColumn.add(Box.createVerticalStrut(16)); // spacing between vector and buttons
+
+        // Metrics panels
         JPanel leftPanel = new JPanel(new GridBagLayout());
         JPanel rightPanel = new JPanel(new GridBagLayout());
         leftPanel.setBackground(Color.WHITE);
@@ -130,7 +138,10 @@ class CvssTab extends JPanel {
         metricsGbc.gridx = 1;
         buttonsPanel.add(rightPanel, metricsGbc);
 
-        // --- Main Center Panel: leftColumn | buttonsPanel ---
+        buttonsPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        rightColumn.add(buttonsPanel);
+
+        // --- Main Center Panel: leftColumn | rightColumn ---
         JPanel centerPanel = new JPanel(new GridBagLayout());
         centerPanel.setBackground(Color.WHITE);
 
@@ -144,9 +155,9 @@ class CvssTab extends JPanel {
         centerGbc.gridx = 0;
         centerPanel.add(leftColumn, centerGbc);
 
-        // Right side: button panel
+        // Right side: vector string + button panel
         centerGbc.gridx = 1;
-        centerPanel.add(buttonsPanel, centerGbc);
+        centerPanel.add(rightColumn, centerGbc);
 
         // Center the row in the available space
         add(centerPanel, BorderLayout.CENTER);
@@ -155,7 +166,7 @@ class CvssTab extends JPanel {
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(new Color(245, 245, 245));
-        JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
+        JLabel footerLabel = new JLabel("<html><b>Developed with <span style='color:#e25555;'>&#10084;&#65039;</span> by Harith Dilshan</b> &nbsp;|&nbsp; <b>GitHub: <span style='color:#0366d6;'>@h4rithd</span></b></html>");
         footerLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         footerLabel.setForeground(new Color(80, 80, 80));
         footerPanel.add(footerLabel);
