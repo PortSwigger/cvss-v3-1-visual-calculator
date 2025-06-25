@@ -60,9 +60,18 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        // --- Middle Row: base score | button panel | risk meter ---
+        // --- Left Column: risk speedometer (top), base score (bottom) ---
+        JPanel leftColumn = new JPanel();
+        leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
+        leftColumn.setBackground(Color.WHITE);
 
-        // Base Score Panel (centered vertically)
+        // Risk Meter Panel (top of left column)
+        riskMeterPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leftColumn.add(riskMeterPanel);
+
+        leftColumn.add(Box.createVerticalStrut(16)); // spacing between meter and base score
+
+        // Base Score Panel (below risk meter)
         JPanel baseScorePanel = new JPanel();
         baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.Y_AXIS));
         baseScorePanel.setBackground(Color.WHITE);
@@ -79,7 +88,10 @@ class CvssTab extends JPanel {
         baseScorePanel.add(Box.createVerticalStrut(8));
         baseScorePanel.add(baseScoreLabel);
 
-        // Metrics panels
+        baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        leftColumn.add(baseScorePanel);
+
+        // --- Right Column: button panel (metrics) ---
         JPanel leftPanel = new JPanel(new GridBagLayout());
         JPanel rightPanel = new JPanel(new GridBagLayout());
         leftPanel.setBackground(Color.WHITE);
@@ -118,46 +130,32 @@ class CvssTab extends JPanel {
         metricsGbc.gridx = 1;
         buttonsPanel.add(rightPanel, metricsGbc);
 
-        // Risk Meter Panel (already created)
-        riskMeterPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        // --- Main Center Panel: leftColumn | buttonsPanel ---
+        JPanel centerPanel = new JPanel(new GridBagLayout());
+        centerPanel.setBackground(Color.WHITE);
 
-        // Middle row: baseScorePanel | buttonsPanel | riskMeterPanel
-        JPanel middleRow = new JPanel(new GridBagLayout());
-        middleRow.setBackground(Color.WHITE);
+        GridBagConstraints centerGbc = new GridBagConstraints();
+        centerGbc.gridy = 0;
+        centerGbc.insets = new Insets(0, 30, 0, 30);
+        centerGbc.anchor = GridBagConstraints.CENTER;
+        centerGbc.fill = GridBagConstraints.NONE;
 
-        GridBagConstraints c = new GridBagConstraints();
-        c.gridy = 0;
-        c.insets = new Insets(0, 20, 0, 20);
-        c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.NONE;
+        // Left side: risk meter + base score
+        centerGbc.gridx = 0;
+        centerPanel.add(leftColumn, centerGbc);
 
-        // baseScorePanel
-        c.gridx = 0;
-        middleRow.add(baseScorePanel, c);
-
-        // buttonsPanel
-        c.gridx = 1;
-        middleRow.add(buttonsPanel, c);
-
-        // riskMeterPanel
-        c.gridx = 2;
-        middleRow.add(riskMeterPanel, c);
+        // Right side: button panel
+        centerGbc.gridx = 1;
+        centerPanel.add(buttonsPanel, centerGbc);
 
         // Center the row in the available space
-        c.gridx = 0;
-        c.gridy = 0;
-        c.gridwidth = 3;
-        c.weightx = 1.0;
-        c.anchor = GridBagConstraints.CENTER;
-        c.fill = GridBagConstraints.NONE;
-
-        add(middleRow, BorderLayout.CENTER);
+        add(centerPanel, BorderLayout.CENTER);
 
         // Footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(new Color(245, 245, 245));
-        JLabel footerLabel = new JLabel("<html><b>Developed with <span style='color:#e25555;'>&#10084;&#65039;</span> by Harith Dilshan</b> &nbsp;|&nbsp; <b>GitHub: <span style='color:#0366d6;'>@h4rithd</span></b></html>");
+        JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
         footerLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         footerLabel.setForeground(new Color(80, 80, 80));
         footerPanel.add(footerLabel);
