@@ -42,8 +42,8 @@ class CvssTab extends JPanel {
     private final Map<String, ButtonGroup> metricGroups = new HashMap<>();
     private final Map<String, String> currentSelections = new HashMap<>();
     private static final String CVSS_VERSION = "CVSS:3.1";
-    private int metricRowCounterLeft = 1;
-    private int metricRowCounterRight = 1;
+    private int metricRowCounterLeft = 0;
+    private int metricRowCounterRight = 0;
 
     public CvssTab() {
         setLayout(new BorderLayout(10, 10));
@@ -58,10 +58,14 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        JPanel outerPanel = new JPanel(new BorderLayout(10, 10));
+        JPanel outerPanel = new JPanel(new GridBagLayout());
+        outerPanel.setBackground(Color.WHITE);
+        GridBagConstraints gbc = new GridBagConstraints();
+        gbc.fill = GridBagConstraints.BOTH;
+        gbc.insets = new Insets(5, 15, 5, 15);
+
         JPanel leftPanel = new JPanel(new GridBagLayout());
         JPanel rightPanel = new JPanel(new GridBagLayout());
-
         leftPanel.setBackground(Color.WHITE);
         rightPanel.setBackground(Color.WHITE);
 
@@ -75,7 +79,25 @@ class CvssTab extends JPanel {
         gbcRight.insets = new Insets(5, 5, 5, 5);
         gbcRight.anchor = GridBagConstraints.WEST;
 
-        // Base Score Section
+        // Left metrics
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Vector", "AV", new String[]{"Network", "Adjacent", "Local", "Physical"}, new String[]{"N", "A", "L", "P"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Complexity", "AC", new String[]{"Low", "High"}, new String[]{"L", "H"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Privileges Required", "PR", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "User Interaction", "UI", new String[]{"None", "Required"}, new String[]{"N", "R"});
+
+        // Right metrics
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Scope", "S", new String[]{"Unchanged", "Changed"}, new String[]{"U", "C"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Confidentiality", "C", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
+
+        gbc.gridx = 0;
+        gbc.gridy = 0;
+        outerPanel.add(leftPanel, gbc);
+        gbc.gridx = 1;
+        outerPanel.add(rightPanel, gbc);
+
+        // Base Score
         JPanel baseScorePanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
         baseScorePanel.setBackground(Color.WHITE);
         baseScorePanel.add(new JLabel("Base Score"));
@@ -87,24 +109,8 @@ class CvssTab extends JPanel {
         baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
         baseScorePanel.add(baseScoreLabel);
 
-        outerPanel.add(baseScorePanel, BorderLayout.NORTH);
-
-        // Left column metrics
-        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Vector", "AV", new String[]{"Network", "Adjacent", "Local", "Physical"}, new String[]{"N", "A", "L", "P"});
-        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Attack Complexity", "AC", new String[]{"Low", "High"}, new String[]{"L", "H"});
-        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "Privileges Required", "PR", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(leftPanel, gbcLeft, metricRowCounterLeft++, "User Interaction", "UI", new String[]{"None", "Required"}, new String[]{"N", "R"});
-
-        // Right column metrics
-        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Scope", "S", new String[]{"Unchanged", "Changed"}, new String[]{"U", "C"});
-        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Confidentiality", "C", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Integrity", "I", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-        addMetric(rightPanel, gbcRight, metricRowCounterRight++, "Availability", "A", new String[]{"None", "Low", "High"}, new String[]{"N", "L", "H"});
-
-        outerPanel.add(leftPanel, BorderLayout.WEST);
-        outerPanel.add(rightPanel, BorderLayout.EAST);
-
-        add(outerPanel, BorderLayout.CENTER);
+        add(baseScorePanel, BorderLayout.CENTER);
+        add(outerPanel, BorderLayout.SOUTH);
         initializeDefaults();
     }
 
