@@ -57,7 +57,7 @@ class CvssTab extends JPanel {
         leftColumn.setBackground(Color.WHITE);
         leftColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Risk Analysis"),
-            new EmptyBorder(-11, 16, 16, 16) // top, left, bottom, right
+            new EmptyBorder(-12, 16, 16, 16) 
         ));
 
         // Risk Meter Panel (top of left column)
@@ -73,8 +73,7 @@ class CvssTab extends JPanel {
         JLabel baseScoreTitle = new JLabel("Base Score");
         baseScoreTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         baseScorePanel.add(baseScoreTitle);
-        baseScoreLabel = new JLabel("0.0 (None)");
-        baseScoreLabel.setOpaque(true);
+        baseScoreLabel = new RoundedLabel("0.0 (None)", 18); // 18 is the arc radius, adjust as needed
         baseScoreLabel.setBackground(new Color(200, 200, 200));
         baseScoreLabel.setForeground(Color.BLACK);
         baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
@@ -465,5 +464,25 @@ class CvssV31Calculator {
         if (score <= 6.9) return "Medium";
         if (score <= 8.9) return "High";
         return "Critical";
+    }
+}
+
+class RoundedLabel extends JLabel {
+    private final int arc;
+
+    public RoundedLabel(String text, int arc) {
+        super(text);
+        this.arc = arc;
+        setOpaque(false);
+    }
+
+    @Override
+    protected void paintComponent(Graphics g) {
+        Graphics2D g2 = (Graphics2D) g.create();
+        g2.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2.setColor(getBackground());
+        g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
+        super.paintComponent(g);
+        g2.dispose();
     }
 }
