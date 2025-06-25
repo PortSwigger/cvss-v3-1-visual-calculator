@@ -26,6 +26,9 @@ During penetration testing and vulnerability assessments, it's common to evaluat
 
 ## 🖼️ Screenshots
 
+<img width="1348" alt="image" src="https://github.com/user-attachments/assets/9d6ed39b-7bf8-41f2-a90b-0c5bd9d1b85e" />
+<img width="1128" alt="image" src="https://github.com/user-attachments/assets/e89b5a84-6bf6-40c5-a1e1-6ac580353d8c" />
+<img width="1126" alt="image" src="https://github.com/user-attachments/assets/2cb2ff05-5456-4e8a-94ea-3a19929eb388" />
 
 ---
 
