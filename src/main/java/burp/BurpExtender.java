@@ -57,7 +57,7 @@ class CvssTab extends JPanel {
         leftColumn.setBackground(Color.WHITE);
         leftColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Risk Analysis"),
-            new EmptyBorder(16, 16, 16, 16) // top, left, bottom, right
+            new EmptyBorder(-11, 16, 16, 16) // top, left, bottom, right
         ));
 
         // Risk Meter Panel (top of left column)
@@ -92,12 +92,11 @@ class CvssTab extends JPanel {
         rightColumn.setBackground(Color.WHITE);
         rightColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("CVSS Metrics"),
-            new EmptyBorder(16, 16, 16, 16) // top, left, bottom, right
+            new EmptyBorder(16, 16, 16, -1) // top, left, bottom, right
         ));
 
         // Vector String Panel (top of right column)
         JPanel vectorPanel = new JPanel(new BorderLayout(10, 10));
-        // vectorPanel.setBorder(BorderFactory.createTitledBorder(""));
         vectorStringField = new JLabel("Vector String - CVSS:3.1");
         vectorStringField.setFont(new Font("Monospaced", Font.PLAIN, 14));
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
