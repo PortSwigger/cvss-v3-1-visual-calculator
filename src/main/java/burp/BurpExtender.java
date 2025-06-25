@@ -51,6 +51,7 @@ class CvssTab extends JPanel {
         setBorder(new EmptyBorder(10, 10, 10, 10));
         setBackground(new Color(245, 245, 245));
 
+        // Vector String Panel (top row)
         JPanel vectorPanel = new JPanel(new BorderLayout(10, 10));
         vectorPanel.setBorder(BorderFactory.createTitledBorder("Vector String"));
         vectorStringField = new JTextField("CVSS:3.1");
@@ -59,22 +60,24 @@ class CvssTab extends JPanel {
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         add(vectorPanel, BorderLayout.NORTH);
 
-        // Base Score Panel (centered horizontally)
-        JPanel baseScorePanel = new JPanel();
-        baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.X_AXIS));
-        baseScorePanel.setBackground(Color.WHITE);
+        // --- Middle Row: base score | button panel | risk meter ---
 
-        baseScorePanel.add(Box.createHorizontalGlue());
-        baseScorePanel.add(new JLabel("Base Score"));
+        // Base Score Panel (centered vertically)
+        JPanel baseScorePanel = new JPanel();
+        baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.Y_AXIS));
+        baseScorePanel.setBackground(Color.WHITE);
+        JLabel baseScoreTitle = new JLabel("Base Score");
+        baseScoreTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
+        baseScorePanel.add(baseScoreTitle);
         baseScoreLabel = new JLabel("0.0 (None)");
         baseScoreLabel.setOpaque(true);
         baseScoreLabel.setBackground(new Color(200, 200, 200));
         baseScoreLabel.setForeground(Color.BLACK);
-        baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 14));
-        baseScoreLabel.setBorder(new EmptyBorder(5, 10, 5, 10));
-        baseScorePanel.add(Box.createRigidArea(new Dimension(10, 0)));
+        baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
+        baseScoreLabel.setBorder(new EmptyBorder(8, 18, 8, 18));
+        baseScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        baseScorePanel.add(Box.createVerticalStrut(8));
         baseScorePanel.add(baseScoreLabel);
-        baseScorePanel.add(Box.createHorizontalGlue());
 
         // Metrics panels
         JPanel leftPanel = new JPanel(new GridBagLayout());
@@ -115,40 +118,50 @@ class CvssTab extends JPanel {
         metricsGbc.gridx = 1;
         buttonsPanel.add(rightPanel, metricsGbc);
 
-        // Risk Meter Panel (next to buttons panel)
-        JPanel centerPanel = new JPanel();
-        centerPanel.setLayout(new BoxLayout(centerPanel, BoxLayout.X_AXIS));
-        centerPanel.setBackground(Color.WHITE);
-        buttonsPanel.setAlignmentY(Component.TOP_ALIGNMENT);
+        // Risk Meter Panel (already created)
         riskMeterPanel.setAlignmentY(Component.TOP_ALIGNMENT);
-        centerPanel.add(buttonsPanel);
-        centerPanel.add(Box.createHorizontalStrut(30));
-        centerPanel.add(riskMeterPanel);
 
-        // Stack baseScorePanel and centerPanel vertically with no gap
-        JPanel metricsPanel = new JPanel();
-        metricsPanel.setLayout(new BoxLayout(metricsPanel, BoxLayout.Y_AXIS));
-        metricsPanel.setBackground(Color.WHITE);
+        // Middle row: baseScorePanel | buttonsPanel | riskMeterPanel
+        JPanel middleRow = new JPanel(new GridBagLayout());
+        middleRow.setBackground(Color.WHITE);
 
-        baseScorePanel.setAlignmentX(Component.CENTER_ALIGNMENT);
-        centerPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        GridBagConstraints c = new GridBagConstraints();
+        c.gridy = 0;
+        c.insets = new Insets(0, 20, 0, 20);
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.NONE;
 
-        metricsPanel.add(baseScorePanel);
-        metricsPanel.add(centerPanel);
+        // baseScorePanel
+        c.gridx = 0;
+        middleRow.add(baseScorePanel, c);
 
-        // Add metricsPanel to the center of the main panel
-        add(metricsPanel, BorderLayout.CENTER);
+        // buttonsPanel
+        c.gridx = 1;
+        middleRow.add(buttonsPanel, c);
 
-        // Footer (as before)
+        // riskMeterPanel
+        c.gridx = 2;
+        middleRow.add(riskMeterPanel, c);
+
+        // Center the row in the available space
+        c.gridx = 0;
+        c.gridy = 0;
+        c.gridwidth = 3;
+        c.weightx = 1.0;
+        c.anchor = GridBagConstraints.CENTER;
+        c.fill = GridBagConstraints.NONE;
+
+        add(middleRow, BorderLayout.CENTER);
+
+        // Footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(new Color(245, 245, 245));
-        JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
-        footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        JLabel footerLabel = new JLabel("<html><b>Developed with <span style='color:#e25555;'>&#10084;&#65039;</span> by Harith Dilshan</b> &nbsp;|&nbsp; <b>GitHub: <span style='color:#0366d6;'>@h4rithd</span></b></html>");
+        footerLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
         footerLabel.setForeground(new Color(80, 80, 80));
         footerPanel.add(footerLabel);
 
-        // Add footerPanel to the bottom
         add(footerPanel, BorderLayout.SOUTH);
 
         initializeDefaults();
@@ -367,11 +380,11 @@ class RiskMeterPanel extends JPanel {
         g2.drawString(scoreText, cx - textWidth / 2, cy - radius + 35);
 
         // Draw severity label
-        g2.setFont(new Font("SansSerif", Font.BOLD, 13));
-        String sevText = severity;
-        int sevWidth = g2.getFontMetrics().stringWidth(sevText);
-        g2.setColor(Color.DARK_GRAY);
-        g2.drawString(sevText, cx - sevWidth / 2, cy - radius + 55);
+        // g2.setFont(new Font("SansSerif", Font.BOLD, 13));
+        // String sevText = severity;
+        // int sevWidth = g2.getFontMetrics().stringWidth(sevText);
+        // g2.setColor(Color.DARK_GRAY);
+        // g2.drawString(sevText, cx - sevWidth / 2, cy - radius + 55);
 
         g2.dispose();
     }
