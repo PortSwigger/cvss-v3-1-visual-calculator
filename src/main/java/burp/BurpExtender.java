@@ -37,7 +37,7 @@ public class BurpExtender implements IBurpExtender, ITab {
 
 class CvssTab extends JPanel {
 
-    private final JTextField vectorStringField;
+    private final JLabel vectorStringField;
     private final JLabel baseScoreLabel;
     private final Map<String, ButtonGroup> metricGroups = new HashMap<>();
     private final Map<String, String> currentSelections = new HashMap<>();
@@ -55,6 +55,10 @@ class CvssTab extends JPanel {
         JPanel leftColumn = new JPanel();
         leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
         leftColumn.setBackground(Color.WHITE);
+        leftColumn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("Risk Analysis"),
+            new EmptyBorder(16, 16, 16, 16) // top, left, bottom, right
+        ));
 
         // Risk Meter Panel (top of left column)
         riskMeterPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -86,12 +90,15 @@ class CvssTab extends JPanel {
         JPanel rightColumn = new JPanel();
         rightColumn.setLayout(new BoxLayout(rightColumn, BoxLayout.Y_AXIS));
         rightColumn.setBackground(Color.WHITE);
+        rightColumn.setBorder(BorderFactory.createCompoundBorder(
+            BorderFactory.createTitledBorder("CVSS Metrics"),
+            new EmptyBorder(16, 16, 16, 16) // top, left, bottom, right
+        ));
 
         // Vector String Panel (top of right column)
         JPanel vectorPanel = new JPanel(new BorderLayout(10, 10));
-        vectorPanel.setBorder(BorderFactory.createTitledBorder("Vector String"));
-        vectorStringField = new JTextField("CVSS:3.1");
-        vectorStringField.setEditable(false);
+        // vectorPanel.setBorder(BorderFactory.createTitledBorder(""));
+        vectorStringField = new JLabel("Vector String - CVSS:3.1");
         vectorStringField.setFont(new Font("Monospaced", Font.PLAIN, 14));
         vectorPanel.add(vectorStringField, BorderLayout.CENTER);
         vectorPanel.setMaximumSize(new Dimension(400, 50));
@@ -166,8 +173,8 @@ class CvssTab extends JPanel {
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(new Color(245, 245, 245));
-        JLabel footerLabel = new JLabel("<html><b>Developed with <span style='color:#e25555;'>&#10084;&#65039;</span> by Harith Dilshan</b> &nbsp;|&nbsp; <b>GitHub: <span style='color:#0366d6;'>@h4rithd</span></b></html>");
-        footerLabel.setFont(new Font("SansSerif", Font.ITALIC, 12));
+        JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
+        footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 12));
         footerLabel.setForeground(new Color(80, 80, 80));
         footerPanel.add(footerLabel);
 
