@@ -1,7 +1,7 @@
 # CVSSv3.1-BApp
 
 🎯 A Burp Suite Extension for Visual CVSS v3.1 Scoring  
-Author: [Harith Dilshan (h4rithd)](https://github.com/h4rithd)
+> Author: [Harith Dilshan (h4rithd)](https://github.com/h4rithd)
 
 ---
 
