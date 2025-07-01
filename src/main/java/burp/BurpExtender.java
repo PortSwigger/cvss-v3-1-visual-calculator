@@ -16,7 +16,7 @@ public class BurpExtender implements IBurpExtender, ITab {
     @Override
     public void registerExtenderCallbacks(IBurpExtenderCallbacks callbacks) {
         this.callbacks = callbacks;
-        callbacks.setExtensionName("CVSS v3.1 Calculator");
+        callbacks.setExtensionName("CVSS v3.1 Visual Calculator");
 
         SwingUtilities.invokeLater(() -> {
             cvssTab = new CvssTab();
@@ -172,7 +172,7 @@ class CvssTab extends JPanel {
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
         footerPanel.setBackground(new Color(245, 245, 245));
         JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
-        footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 12));
+        footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 10));
         footerLabel.setForeground(new Color(80, 80, 80));
         footerPanel.add(footerLabel);
 

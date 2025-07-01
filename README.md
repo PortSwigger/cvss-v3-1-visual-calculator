@@ -50,6 +50,7 @@ During penetration testing and vulnerability assessments, it's common to evaluat
 ```bash
 git clone https://github.com/h4rithd/CVSS-v3.1-Visual-Calculator.git
 cd CVSS-v3.1-Visual-Calculator
+./gradle wrapper
 ./gradlew clean jar
 ```
 
