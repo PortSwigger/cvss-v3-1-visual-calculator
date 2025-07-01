@@ -19,7 +19,7 @@ dependencies {
 }
 
 jar {
-    archiveBaseName.set('CVSSv3.1-BApp')
+    archiveBaseName.set('CVSS-v3.1-Visual-Calculator')
     archiveVersion.set('1.0')
     manifest {
         attributes 'Main-Class': 'burp.BurpExtender'

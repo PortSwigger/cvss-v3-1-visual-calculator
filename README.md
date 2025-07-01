@@ -1,4 +1,4 @@
-# CVSSv3.1-BApp
+# CVSS-v3.1-Visual-Calculator
 
 🎯 A Burp Suite Extension for Visual CVSS v3.1 Scoring  
 > Author: [Harith Dilshan (h4rithd)](https://github.com/h4rithd)
@@ -7,7 +7,7 @@
 
 ## 🧩 Overview
 
-**CVSSv3.1-BApp** is a graphical extension for [Burp Suite](https://portswigger.net/burp), designed to calculate and visualize [CVSS v3.1](https://www.first.org/cvss/specification-document) base scores directly within your pentesting workflow.
+**CVSS-v3.1-Visual-Calculator** is a graphical extension for [Burp Suite](https://portswigger.net/burp), designed to calculate and visualize [CVSS v3.1](https://www.first.org/cvss/specification-document) base scores directly within your pentesting workflow.
 
 ---
 
@@ -48,8 +48,8 @@ During penetration testing and vulnerability assessments, it's common to evaluat
 1. **Clone or Download** this repository:
 
 ```bash
-git clone https://github.com/h4rithd/CVSSv3.1-BApp.git
-cd CVSSv3.1-BApp
+git clone https://github.com/h4rithd/CVSS-v3.1-Visual-Calculator.git
+cd CVSS-v3.1-Visual-Calculator
 ./gradlew clean jar
 ```
 
@@ -57,7 +57,7 @@ cd CVSSv3.1-BApp
 - Open Burp > Extender > Extensions
 - Click "Add"
 - Choose Extension Type: Java
-- Select the generated JAR from build/libs/CVSSv3.1-BApp.jar
+- Select the generated JAR from build/libs/CVSS-v3.1-Visual-Calculator.jar
 - Navigate to the "CVSS Calculator" tab in Burp Suite
 
 ---
