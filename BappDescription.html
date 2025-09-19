@@ -1,17 +1,31 @@
-<p>CVSS-v3.1-Visual-Calculator is a graphical extension for Burp Suite, designed to calculate and visualize CVSS v3.1 base scores directly within your penetration testing workflow.</p>
-
-<p>During penetration testing and vulnerability assessments, its common to evaluate risk using the CVSS v3.1 scoring system. This extension simplifies that process by allowing for quick and interactive calculation of CVSS scores, providing a real-time graphical risk meter, auto-generating the CVSS vector string and base score, and allowing for direct screenshots suitable for reporting. All these functionalities are in-built, eliminating the need for external calculators or manual calculation of scores.</p>
+<p>CVSS v3.1 Visual Calculator provides an interactive interface for calculating and visualizing CVSS v3.1 base scores
+  directly within your penetration testing workflow. This extension eliminates the need for external calculators by
+  offering a comprehensive visual scoring system with real-time feedback.</p>
 
 <h2>Features</h2>
-
 <ul>
-  <li>Visual CVSS metric selection interface</li>
-  <li>Dynamic CVSS vector string and score display</li>
-  <li>Integrated risk meter (speedometer-style visualization)</li>
-  <li>Color-coded severity indicators</li>
-  <li>Built-in CVSS v3.1 logic (offline)</li>
-  <li>Designed to support penetration testing reporting</li>
+  <li>Interactive visual metric selection for all eight CVSS v3.1 base metrics</li>
+  <li>Real-time speedometer-style risk visualization with color-coded severity levels</li>
+  <li>Automatic CVSS vector string generation and base score calculation</li>
+  <li>Dynamic severity classification (None, Low, Medium, High, Critical)</li>
 </ul>
 
 <h2>Usage</h2>
-<p>To use CVSS-v3.1-Visual-Calculator, navigate to the \CVSS Calculator\ tab in Burp Suite after loading the extension. From here, you can interactively generate CVSS score and the corresponding CVSS vector string using the visual interface. The risk meter provides a graphical representation of the risk based on the calculated score. Color-coded severity indicators and the ability to take screenshots for reporting purposes are also provided for easy reporting.</p>
+<ol>
+  <li>Navigate to the "CVSS Calculator" tab after loading the extension</li>
+  <li>Select appropriate values for each metric using the toggle buttons:
+    <ul>
+      <li>Attack Vector (Network, Adjacent, Local, Physical)</li>
+      <li>Attack Complexity (Low, High)</li>
+      <li>Privileges Required (None, Low, High)</li>
+      <li>User Interaction (None, Required)</li>
+      <li>Scope (Unchanged, Changed)</li>
+      <li>Confidentiality Impact (None, Low, High)</li>
+      <li>Integrity Impact (None, Low, High)</li>
+      <li>Availability Impact (None, Low, High)</li>
+    </ul>
+  </li>
+  <li>View the calculated base score and severity rating in the left panel</li>
+  <li>Copy the generated CVSS vector string for documentation purposes</li>
+  <li>Use the visual risk meter for stakeholder presentations and reporting</li>
+</ol>

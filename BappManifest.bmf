@@ -6,8 +6,8 @@ ScreenVersion: 1.0.0
 SerialVersion: 1
 MinPlatformVersion: 2
 ProOnly: False
-Author: h4rithd
-ShortDescription: This extension allows users to calculate and visually represent CVSS v3.1 scores within Burp Suite. It features an interactive UI, real-time risk meter, and auto-generates CVSS data.
+Author: Harith Dilshan (h4rithd)
+ShortDescription: Calculate and visually represent CVSS v3.1 scores with an interactive UI, real-time risk meter, and auto-generated CVSS data.
 EntryPoint: CVSS-v3.1-Visual-Calculator-1.0.jar
 BuildCommand: ./gradlew build test
 SupportedProducts: Pro, Community
