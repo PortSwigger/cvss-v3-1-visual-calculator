@@ -45,16 +45,19 @@ class CvssTab extends JPanel {
     private int metricRowCounterLeft = 0;
     private int metricRowCounterRight = 0;
     private final RiskMeterPanel riskMeterPanel = new RiskMeterPanel();
+    private Color componentBgColor;
 
     public CvssTab() {
         setLayout(new BorderLayout(10, 10));
         setBorder(new EmptyBorder(10, 10, 10, 10));
-        setBackground(new Color(245, 245, 245));
+        
+        setBackground(UIManager.getColor("Panel.background"));
+        componentBgColor = UIManager.getColor("Panel.background");
 
         // --- Left Column: risk speedometer (top), base score (bottom) ---
         JPanel leftColumn = new JPanel();
         leftColumn.setLayout(new BoxLayout(leftColumn, BoxLayout.Y_AXIS));
-        leftColumn.setBackground(Color.WHITE);
+        leftColumn.setBackground(componentBgColor);
         leftColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Risk Analysis"),
             new EmptyBorder(-12, 16, 16, 16) 
@@ -69,13 +72,13 @@ class CvssTab extends JPanel {
         // Base Score Panel (below risk meter)
         JPanel baseScorePanel = new JPanel();
         baseScorePanel.setLayout(new BoxLayout(baseScorePanel, BoxLayout.Y_AXIS));
-        baseScorePanel.setBackground(Color.WHITE);
+        baseScorePanel.setBackground(componentBgColor);
         JLabel baseScoreTitle = new JLabel("Base Score");
         baseScoreTitle.setAlignmentX(Component.CENTER_ALIGNMENT);
         baseScorePanel.add(baseScoreTitle);
         baseScoreLabel = new RoundedLabel("0.0 (None)", 18); // 18 is the arc radius, adjust as needed
-        baseScoreLabel.setBackground(new Color(200, 200, 200));
-        baseScoreLabel.setForeground(Color.BLACK);
+        baseScoreLabel.setBackground(UIManager.getColor("Label.background"));
+        baseScoreLabel.setForeground(UIManager.getColor("Label.foreground"));
         baseScoreLabel.setFont(new Font("SansSerif", Font.BOLD, 16));
         baseScoreLabel.setBorder(new EmptyBorder(8, 18, 8, 18));
         baseScoreLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
@@ -88,7 +91,7 @@ class CvssTab extends JPanel {
         // --- Right Column: vector string (top), button panel (bottom) ---
         JPanel rightColumn = new JPanel();
         rightColumn.setLayout(new BoxLayout(rightColumn, BoxLayout.Y_AXIS));
-        rightColumn.setBackground(Color.WHITE);
+        rightColumn.setBackground(componentBgColor);
         rightColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("CVSS Metrics"),
             new EmptyBorder(16, 16, 16, -1) // top, left, bottom, right
@@ -107,8 +110,8 @@ class CvssTab extends JPanel {
         // Metrics panels
         JPanel leftPanel = new JPanel(new GridBagLayout());
         JPanel rightPanel = new JPanel(new GridBagLayout());
-        leftPanel.setBackground(Color.WHITE);
-        rightPanel.setBackground(Color.WHITE);
+        leftPanel.setBackground(componentBgColor);
+        rightPanel.setBackground(componentBgColor);
 
         GridBagConstraints gbcLeft = new GridBagConstraints();
         gbcLeft.fill = GridBagConstraints.HORIZONTAL;
@@ -134,7 +137,7 @@ class CvssTab extends JPanel {
 
         // Buttons panel (side by side)
         JPanel buttonsPanel = new JPanel(new GridBagLayout());
-        buttonsPanel.setBackground(Color.WHITE);
+        buttonsPanel.setBackground(componentBgColor);
         GridBagConstraints metricsGbc = new GridBagConstraints();
         metricsGbc.gridx = 0;
         metricsGbc.gridy = 0;
@@ -148,7 +151,7 @@ class CvssTab extends JPanel {
 
         // --- Main Center Panel: leftColumn | rightColumn ---
         JPanel centerPanel = new JPanel(new GridBagLayout());
-        centerPanel.setBackground(Color.WHITE);
+        centerPanel.setBackground(componentBgColor);
 
         GridBagConstraints centerGbc = new GridBagConstraints();
         centerGbc.gridy = 0;
@@ -170,10 +173,10 @@ class CvssTab extends JPanel {
         // Footer
         JPanel footerPanel = new JPanel();
         footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
-        footerPanel.setBackground(new Color(245, 245, 245));
+        footerPanel.setBackground(UIManager.getColor("Panel.background"));
         JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
         footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 10));
-        footerLabel.setForeground(new Color(80, 80, 80));
+        footerLabel.setForeground(UIManager.getColor("Label.foreground"));
         footerPanel.add(footerLabel);
 
         add(footerPanel, BorderLayout.SOUTH);
@@ -188,7 +191,7 @@ class CvssTab extends JPanel {
 
         gbc.gridx = 1;
         JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 2, 0));
-        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.setBackground(componentBgColor);
         ButtonGroup group = new ButtonGroup();
         metricGroups.put(abbr, group);
 
@@ -248,8 +251,8 @@ class CvssTab extends JPanel {
 
     private void updateButtonColors(JToggleButton button, boolean isSelected) {
         if (isSelected) {
-            button.setBackground(new Color(0, 153, 102));
-            button.setForeground(Color.WHITE);
+            button.setBackground(UIManager.getColor("Button.select"));
+            button.setForeground(UIManager.getColor("Button.selectForeground"));
         } else {
             button.setBackground(UIManager.getColor("Button.background"));
             button.setForeground(UIManager.getColor("Button.foreground"));
@@ -314,8 +317,32 @@ class CvssTab extends JPanel {
                 color = Color.decode("#de50a6");
                 break;
             default:
-                color = Color.LIGHT_GRAY;
+                color = UIManager.getColor("Label.disabledForeground");
         }
+        
+        if (color == null) {
+            // Fallback colors if UIManager colors are not available
+            switch (severity) {
+                case "None": // info
+                    color = Color.decode("#006fa2");
+                    break;
+                case "Low":
+                    color = Color.decode("#00c17e");
+                    break;
+                case "Medium":
+                    color = Color.decode("#ff9655");
+                    break;
+                case "High":
+                    color = Color.decode("#ff5863");
+                    break;
+                case "Critical":
+                    color = Color.decode("#de50a6");
+                    break;
+                default:
+                    color = Color.LIGHT_GRAY;
+            }
+        }
+        
         baseScoreLabel.setBackground(color);
         baseScoreLabel.setForeground(Color.WHITE);
         riskMeterPanel.setScore(score, severity); // Update risk meter dynamically
@@ -353,7 +380,6 @@ class RiskMeterPanel extends JPanel {
 
         // Draw colored arc segments
         int arcStart = 180;
-        int arcExtent = 180;
         int[] arcRanges = {36, 54, 54, 27, 9}; // degrees for None, Low, Medium, High, Critical
         Color[] arcColors = {
             Color.decode("#006fa2"), // None/info
