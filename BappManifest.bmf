@@ -3,7 +3,7 @@ ExtensionType: 1
 Name: CVSSv3.1 Visual Calculator
 RepoName: cvss-v3-1-visual-calculator
 ScreenVersion: 1.0.0
-SerialVersion: 2
+SerialVersion: 3
 MinPlatformVersion: 2
 ProOnly: False
 Author: Harith Dilshan (h4rithd)
