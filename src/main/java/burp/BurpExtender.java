@@ -4,6 +4,11 @@ import javax.swing.*;
 import javax.swing.border.EmptyBorder;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.awt.datatransfer.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import javax.imageio.ImageIO;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.StringJoiner;
@@ -60,7 +65,7 @@ class CvssTab extends JPanel {
         leftColumn.setBackground(componentBgColor);
         leftColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("Risk Analysis"),
-            new EmptyBorder(-12, 16, 16, 16) 
+            new EmptyBorder(-12, 8, 8, 8) // Reduced padding
         ));
 
         // Risk Meter Panel (top of left column)
@@ -94,7 +99,7 @@ class CvssTab extends JPanel {
         rightColumn.setBackground(componentBgColor);
         rightColumn.setBorder(BorderFactory.createCompoundBorder(
             BorderFactory.createTitledBorder("CVSS Metrics"),
-            new EmptyBorder(16, 16, 16, -1) // top, left, bottom, right
+            new EmptyBorder(8, 8, 8, 8) // Reduced padding
         ));
 
         // Vector String Panel (top of right column)
@@ -155,7 +160,7 @@ class CvssTab extends JPanel {
 
         GridBagConstraints centerGbc = new GridBagConstraints();
         centerGbc.gridy = 0;
-        centerGbc.insets = new Insets(0, 30, 0, 30);
+        centerGbc.insets = new Insets(0, 10, 0, 10); // Reduced spacing between panels
         centerGbc.anchor = GridBagConstraints.CENTER;
         centerGbc.fill = GridBagConstraints.NONE;
 
@@ -167,16 +172,53 @@ class CvssTab extends JPanel {
         centerGbc.gridx = 1;
         centerPanel.add(rightColumn, centerGbc);
 
-        // Center the row in the available space
-        add(centerPanel, BorderLayout.CENTER);
+        // Create a wrapper panel with GridBagLayout for perfect centering
+        JPanel mainContentWrapper = new JPanel(new GridBagLayout());
+        mainContentWrapper.setBackground(componentBgColor);
+        
+        // Center constraints
+        GridBagConstraints wrapperGbc = new GridBagConstraints();
+        wrapperGbc.gridx = 0;
+        wrapperGbc.gridy = 0;
+        wrapperGbc.weightx = 1.0; // Allow horizontal stretching
+        wrapperGbc.weighty = 1.0; // Allow vertical stretching
+        wrapperGbc.anchor = GridBagConstraints.CENTER;
+        wrapperGbc.fill = GridBagConstraints.NONE;
+        
+        // Add the center panel to the wrapper with center constraints
+        mainContentWrapper.add(centerPanel, wrapperGbc);
 
-        // Footer
+        // Add the wrapper to maintain the compact layout
+        add(mainContentWrapper, BorderLayout.CENTER);
+
+        // Screenshot buttons panel
+        JPanel screenshotPanel = new JPanel(new FlowLayout(FlowLayout.CENTER, 10, 0));
+        screenshotPanel.setBackground(componentBgColor);
+        
+        JButton saveButton = new JButton("Save as Image");
+        saveButton.addActionListener(e -> saveAsImage());
+        
+        JButton copyButton = new JButton("Copy to Clipboard");
+        copyButton.addActionListener(e -> copyToClipboard());
+        
+        screenshotPanel.add(saveButton);
+        screenshotPanel.add(copyButton);
+        
+        // Footer with buttons and developer info
         JPanel footerPanel = new JPanel();
-        footerPanel.setLayout(new FlowLayout(FlowLayout.CENTER));
+        footerPanel.setLayout(new BoxLayout(footerPanel, BoxLayout.Y_AXIS));
         footerPanel.setBackground(UIManager.getColor("Panel.background"));
+        
+        // Add screenshot panel
+        screenshotPanel.setAlignmentX(Component.CENTER_ALIGNMENT);
+        footerPanel.add(screenshotPanel);
+        footerPanel.add(Box.createVerticalStrut(10));
+        
+        // Developer info
         JLabel footerLabel = new JLabel("Developed by Harith Dilshan | h4rithd");
         footerLabel.setFont(new Font("Monospaced", Font.PLAIN, 10));
         footerLabel.setForeground(UIManager.getColor("Label.foreground"));
+        footerLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
         footerPanel.add(footerLabel);
 
         add(footerPanel, BorderLayout.SOUTH);
@@ -256,6 +298,98 @@ class CvssTab extends JPanel {
         } else {
             button.setBackground(UIManager.getColor("Button.background"));
             button.setForeground(UIManager.getColor("Button.foreground"));
+        }
+    }
+
+    private BufferedImage captureMainPanels() {
+        // Find the mainContentWrapper which contains the compact layout
+        Component[] components = getComponents();
+        JPanel mainWrapper = null;
+        for (Component comp : components) {
+            if (comp instanceof JPanel && comp.getParent() == this) {
+                mainWrapper = (JPanel) comp;
+                break;
+            }
+        }
+        
+        if (mainWrapper == null) return null;
+        
+        // Get the actual center panel with the content
+        JPanel centerPanel = (JPanel) ((JPanel) mainWrapper.getComponent(0));
+        
+        // Create a buffered image with minimal padding
+        Dimension size = centerPanel.getPreferredSize();
+        BufferedImage image = new BufferedImage(
+            size.width + 2, // minimal padding
+            size.height + 2,
+            BufferedImage.TYPE_INT_ARGB
+        );
+        
+        Graphics2D g2d = image.createGraphics();
+        g2d.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+        g2d.setRenderingHint(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
+        
+        // Translate to account for minimal padding
+        g2d.translate(1, 1);
+        
+        // Paint with the panel's background
+        g2d.setColor(centerPanel.getBackground());
+        g2d.fillRect(-1, -1, size.width + 2, size.height + 2);
+        
+        // Paint the center panel
+        centerPanel.paint(g2d);
+        g2d.dispose();
+        
+        return image;
+    }
+
+    private void saveAsImage() {
+        try {
+            BufferedImage image = captureMainPanels();
+            if (image == null) {
+                JOptionPane.showMessageDialog(this, "Error: Could not capture the panels", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+
+            JFileChooser fileChooser = new JFileChooser();
+            fileChooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter("PNG Images", "png"));
+            
+            if (fileChooser.showSaveDialog(this) == JFileChooser.APPROVE_OPTION) {
+                String filePath = fileChooser.getSelectedFile().getPath();
+                if (!filePath.toLowerCase().endsWith(".png")) {
+                    filePath += ".png";
+                }
+                
+                File outputFile = new File(filePath);
+                ImageIO.write(image, "png", outputFile);
+                JOptionPane.showMessageDialog(this, "Image saved successfully!", 
+                    "Success", JOptionPane.INFORMATION_MESSAGE);
+            }
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(this, "Error saving image: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
+        }
+    }
+
+    private void copyToClipboard() {
+        try {
+            BufferedImage image = captureMainPanels();
+            if (image == null) {
+                JOptionPane.showMessageDialog(this, "Error: Could not capture the panels", 
+                    "Error", JOptionPane.ERROR_MESSAGE);
+                return;
+            }
+            
+            TransferableImage transferable = new TransferableImage(image);
+            Toolkit.getDefaultToolkit().getSystemClipboard().setContents(transferable, null);
+            
+            JOptionPane.showMessageDialog(this, "Image copied to clipboard!", 
+                "Success", JOptionPane.INFORMATION_MESSAGE);
+        } catch (Exception e) {
+            JOptionPane.showMessageDialog(this, "Error copying to clipboard: " + e.getMessage(), 
+                "Error", JOptionPane.ERROR_MESSAGE);
         }
     }
 
@@ -510,5 +644,31 @@ class RoundedLabel extends JLabel {
         g2.fillRoundRect(0, 0, getWidth(), getHeight(), arc, arc);
         super.paintComponent(g);
         g2.dispose();
+    }
+}
+
+class TransferableImage implements Transferable {
+    private Image image;
+
+    public TransferableImage(Image image) {
+        this.image = image;
+    }
+
+    @Override
+    public Object getTransferData(DataFlavor flavor) throws UnsupportedFlavorException {
+        if (flavor.equals(DataFlavor.imageFlavor)) {
+            return image;
+        }
+        throw new UnsupportedFlavorException(flavor);
+    }
+
+    @Override
+    public DataFlavor[] getTransferDataFlavors() {
+        return new DataFlavor[] { DataFlavor.imageFlavor };
+    }
+
+    @Override
+    public boolean isDataFlavorSupported(DataFlavor flavor) {
+        return flavor.equals(DataFlavor.imageFlavor);
     }
 }
